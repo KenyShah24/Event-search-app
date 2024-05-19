@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+@font-face {
+	font-family: 'merriweather';
+	src: url(./assets/Merriweather-Light.ttf);
+}
+@font-face {
+	font-family: 'lato';
+	src: url(./assets/Lato-Regular.ttf);
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: 'lato', sans-serif;font-size: 16px;}
+

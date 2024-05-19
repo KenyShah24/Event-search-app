@@ -1,0 +1,314 @@
+<div class="container mt-4 ">
+<div class="row justify-content-center">
+    <div class="col-sm-5 col-11" id="form_outer">
+        <div class="my-4" id="form_heading" style="border-bottom: 2px solid gray;">
+        <p id="eventSearchTitle">Events Search</p>
+        </div>
+        <form class="row g-3"  [formGroup] = "formGroup" (ngSubmit)="onSubmit()" #myForm="ngForm" ngNativeValidate >
+            <!--keyword-->
+            <div class="col-md-12">
+                <label class="form-label reqd" for="keyword" id="form_subheadings">Keyword</label>
+                <input type="text" id="keyword" class="form-control" name="keyword" formControlName="keyword" [matAutocomplete]="auto" required/>
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor = "let item of filteredOptions" [value]="item">
+                        {{item}}
+                    </mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <!--distance-->
+            <div class="col-md-6">
+                <label class="form-label reqd" for="distance" id="form_subheadings">Distance</label>
+                <input type="number" id="distance" class="form-control" name="distance" value="10" 
+                formControlName="distance"/>
+            </div>
+
+            <!--Category-->
+            <div class="col-md-5">
+                <label for="category" class="form-label reqd" id="form_subheadings">Category</label>
+                <select class="form-control" id="category" name="category" formControlName="category">
+                    <option value="default">Default</option>
+                    <option value="KZFzniwnSyZfZ7v7nJ">Music</option>
+                    <option value="KZFzniwnSyZfZ7v7nE">Sports</option>
+                    <option value="KZFzniwnSyZfZ7v7na">Art & Theatre</option>
+                    <option value="KZFzniwnSyZfZ7v7nn">Film</option>
+                    <option value="KZFzniwnSyZfZ7v7n1">Miscelleneous</option>
+                </select>
+            </div>
+
+            <!--Location-->
+            <div class="col-md-12">
+                <label for="location" class="form-label reqd" id="form_subheadings">Location</label>
+                <input type="text" id="location" class="form-control" formControlName="location" required/>
+            </div>
+
+            <!--Autodetect Checkbox-->
+            <div class="col-md-12">
+                <input class="form-check-input" type="checkbox" formControlName="autodetect"/>
+                <label class="form-check-label ms-2" id="form_subheadings">Auto-detect your location</label>
+            </div>
+
+            <!--Submit Button-->
+            <div class="row justify-content-center mt-3">
+            <div class="col-3 col-md-6 text-md-end mx-2 mx-md-0">
+                <button class="btn btn-danger" type="submit" style="text-transform: uppercase;">Submit</button>
+            </div>
+
+             <!--Clear Button-->
+            <div class="col-3 col-md-6">
+                <button class="btn btn-primary" type="reset" (click)="clearSearchForm()" style="text-transform: uppercase;">Clear</button>
+            </div>
+            </div>
+            <div class="my-2"></div>
+            <br>
+        </form>
+    </div>
+</div>
+</div>
+
+<div class="container max-width-sm-75" *ngIf="gotResults" id="search_results_table">
+    <table mat-table class="table table-striped table-dark table-responsive mt-5 mx-md-auto col-11 col-md-5" style="overflow:auto; display:block">
+        <thead>
+            <tr>
+                <th class = "col-2 text-center">Date/Time</th>
+                <th class = "col-1 text-center" >Icon</th>
+                <th class = "col-4 text-center" >Event</th>
+                <th class = "col-2 text-center" >Genre</th>
+                <th class = "col-3 text-center" >Venue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="clickable" (click) = "getEventDetails(data)" *ngFor = "let data of row_data;">
+                <td class = "text-center">{{data.dates?.start?.localDate}}<br/>{{data.dates?.start?.localTime}}</td>
+                <td class = "text-center"><img src={{data.images[0].url}} width="100" height="100"/></td>
+                <td class = "text-center">{{data.name}}</td>
+                <td class = "text-center">{{data.classifications[0]?.segment?.name}}</td>
+                <td class = "text-center">{{data._embedded?.venues[0]?.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="text-center" *ngIf="noResults">
+    <p class="w-50 mx-auto" style="color:red; font-size:18px; background-color: white; border-radius: 1em; font-weight: 500; margin-top: 100px;">No results available</p>
+</div>
+
+
+<div class="row justify-content-sm-center mt-5 col-11 col-sm mx-auto" >
+    <div class="col-sm-8">
+    <div id="search_results_card" *ngIf="clickedCard" style="margin-bottom: 40px;">
+    <div>
+        <button class="text-start mt-2 ms-3" style="background-color: transparent; border: none;" (click)="changeState()">
+            <div style="display:flex;align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" color="white" stroke-width="1" class="feather feather-chevron-left" viewBox="0 0 24 24" width="24px" height="24px"><path d="m15 18-6-6 6-6"/></svg>
+                <span style="color: white;text-decoration: underline;margin-left: -5px;">Back</span>
+            </div>
+        </button>
+    </div>
+    <div id="form_heading" class="my-4" >
+        <div class="align-items-sm-end align-items-xs-center px-3" style="display: flex; justify-content: center;">
+        <p style="color:white; font-size: 20px;"><b>{{cardResults.name}}</b></p>
+        <button type="button" class="btn btn-default">
+            <div (click)="addToFavorite()">
+              <span class="material-icons" *ngIf="isEventFavorite()==false" style="color: gray;">favorite_outline</span>
+              <span class="material-icons" *ngIf="isEventFavorite()==true" style="color: red;">favorite</span>
+            </div>
+        </button>
+        </div>
+    </div>
+    <mat-tab-group mat-align-tabs="center">
+        <!-- Tab 1 -->
+        <mat-tab label="Event">
+            <div class="row row-sm g-1 mt-2 px-3">
+            <div class="col-sm g-1 mt-2">
+                <div class="col-sm text-center" *ngIf="cardResults.date!=null">
+                    <p class="cardSubHeadings">Date</p>
+                    <p class="headingDetails">{{cardResults.date}}</p>
+                </div>
+                <div class="col-sm text-center" *ngIf="cardResults.artist!=null">
+                    <p class="cardSubHeadings">Artist/Team</p>
+                    <p class="headingDetails">
+                        {{cardResults.artist}}
+                    </p>
+                </div>
+                <div class="col-sm text-center" *ngIf="cardResults.venue!=null">
+                    <p class="cardSubHeadings">Venue</p>
+                    <p class="headingDetails">{{cardResults.venue}}</p>
+                </div>
+                <div class="col-sm text-center" *ngIf="cardResults.genres!=null">
+                    <p class="cardSubHeadings">Genres</p>
+                    <p class="headingDetails">
+                        {{cardResults.genres}}
+                    </p>
+                </div>
+                <div class="col-sm text-center" *ngIf="cardResults.priceRange!=null">
+                    <p class="cardSubHeadings">Price Ranges</p>
+                    <p  class="headingDetails">{{cardResults.priceRange}}</p>
+                </div>
+                <div id="statusLabelCol" class="col-sm text-center" *ngIf="cardResults.ticketStatus!=null">
+                    <p class="cardSubHeadings">Ticket Status</p>
+                    <div id="statusLabel" class="headingDetails mx-auto mb-3" style="padding-inline: 10px; width: fit-content; border-radius: 5px; border: 0px solid;" [ngStyle]="{'background-color': n_color}">{{n_status}}</div>
+                </div>
+                <div class="col-sm text-center" *ngIf="cardResults.buyTicketAt!=null">
+                    <p class="cardSubHeadings">Buy Ticket At:</p>
+                    <a class="headingDetails" href="{{cardResults.buyTicketAt}}" target="_blank">Ticketmaster</a>
+                </div>
+            </div>
+            <div class="col-sm row g-1 mt-2" style="align-items: center;">
+                <div class="col-sm text-center">
+                    <div class="d-flex justify-content-center" *ngIf="cardResults.seatmap!=null">
+                        <img src="{{cardResults.seatmap}}" style="object-fit: contain; width: 90%;">
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!--Social Media Icons-->
+            <div>
+                <p class="text-center mt-2">Share on: 
+                    <a href="https://twitter.com/intent/tweet?text=Check%20{{cardResults.name}}%20on%20Ticketmaster.%0A&url=https%3A%2F%2F{{cardResults.buyTicketAt}}" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="30px" height="30px"><path fill="#03A9F4" d="M42 12.429a14.978 14.978 0 0 1-4.247 1.162 7.38 7.38 0 0 0 3.251-4.058 14.829 14.829 0 0 1-4.693 1.776A7.377 7.377 0 0 0 30.926 9c-4.08 0-7.387 3.278-7.387 7.32 0 .572.067 1.129.193 1.67a21.05 21.05 0 0 1-15.224-7.654 7.23 7.23 0 0 0-1 3.686c0 2.541 1.301 4.778 3.285 6.096a7.52 7.52 0 0 1-3.349-.914v.086c0 3.551 2.547 6.508 5.923 7.181a7.346 7.346 0 0 1-1.941.263c-.477 0-.942-.054-1.392-.135.94 2.902 3.667 5.023 6.898 5.086a14.925 14.925 0 0 1-9.174 3.134 14.61 14.61 0 0 1-1.761-.104A21.109 21.109 0 0 0 17.321 38c13.585 0 21.017-11.156 21.017-20.834 0-.317-.01-.633-.025-.945A14.532 14.532 0 0 0 42 12.429"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{cardResults.buyTicketAt}}&quote=Check%20{{cardResults.name}}%20on%20Ticketmaster.%0A" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30px" height="30px"><path fill="#0746cd" d="M24 4H6a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h10v-9h-3v-3h3v-1.611C16 9.339 17.486 8 20.021 8c1.214 0 1.856.09 2.16.131V11h-1.729C19.376 11 19 11.568 19 12.718V14h3.154l-.428 3H19v9h5a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>                    
+                    </a>
+                </p>
+            </div>
+        </mat-tab>
+ 
+
+        <!--Tab 2-->
+        <mat-tab label="Artist/Teams">
+            <div *ngIf="noArtist || ArtistTeamList?.length === blankArtistCount" style="margin-bottom: 40px;">
+                <p class="text-center mx-auto col-md-6 col-9 px-5" style="color:red; font-size:18px; background-color: white; border-radius: 1em; font-weight: 500; margin-block: 100px;">No music related artist details to show</p>
+            </div>
+                        <!--Carousel Images-->
+                        <div class="py-2" *ngIf="artistContentList?.length > 0">
+                            <div id="carouselExampleControls" class="carousel slide" data-interval="false">
+                                <div class="carousel-inner">
+                                  <div class="carousel-item" *ngFor="let item of artistContentList; let i = index" [ngClass]="{'active': i == 0}">
+                                    <div class="text-center py-2" style="padding-inline: 5rem;">
+                                    <div class="row mb-3 align-items-baseline">
+                                        <div class="col-md-3">
+                                            <img src={{item.image}} class="rounded-circle" alt={{item.Name}} width="150px" height="150px"> 
+                                            <p class="cardSubHeadings mt-2">{{item.Name}}</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p class="cardSubHeadingsArtist">Popularity</p>
+                                            <div class="current" [ngStyle]="getOverlayStyle()">{{item.Popularity}}</div>
+                                            <mat-progress-spinner mode="determinate" value={{item.Popularity}} diameter=50 color="warn" style="margin:0 auto; margin-top: -10px;">
+                                            </mat-progress-spinner>
+                                        </div>
+                                        <div class="col-md-3">
+                                          <p class="cardSubHeadingsArtist">Followers</p>
+                                          <p>{{item.Followers | number }}</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p class="cardSubHeadingsArtist">Spotify Link</p>
+                                            <a href={{item.CheckAt}} target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewBox="0 0 1333.33 1333.3" height="35px" width="35px">
+                                                    <path fill="#1ed760" fill-rule="nonzero" d="M666.66 0C298.48 0 0 298.47 0 666.65c0 368.19 298.48 666.65 666.66 666.65 368.22 0 666.67-298.45 666.67-666.65C1333.33 298.49 1034.88.03 666.65.03l.01-.04zm305.73 961.51c-11.94 19.58-37.57 25.8-57.16 13.77-156.52-95.61-353.57-117.26-585.63-64.24-22.36 5.09-44.65-8.92-49.75-31.29-5.12-22.37 8.84-44.66 31.26-49.75 253.95-58.02 471.78-33.04 647.51 74.35 19.59 12.02 25.8 37.57 13.77 57.16zm81.6-181.52c-15.05 24.45-47.05 32.17-71.49 17.13-179.2-110.15-452.35-142.05-664.31-77.7-27.49 8.3-56.52-7.19-64.86-34.63-8.28-27.49 7.22-56.46 34.66-64.82 242.11-73.46 543.1-37.88 748.89 88.58 24.44 15.05 32.16 47.05 17.12 71.46V780zm7.01-189.02c-214.87-127.62-569.36-139.35-774.5-77.09-32.94 9.99-67.78-8.6-77.76-41.55-9.98-32.96 8.6-67.77 41.56-77.78 235.49-71.49 626.96-57.68 874.34 89.18 29.69 17.59 39.41 55.85 21.81 85.44-17.52 29.63-55.89 39.4-85.42 21.8h-.03z"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p class="cardSubHeadingsArtist mb-3" style="font-weight: 400;text-align: left;">Album featuring <span style="text-transform: none;">{{item.Name}}</span></p>
+                                    <div class="row">
+                                        <div class="col-sm-4 mb-4" *ngFor="let pic of item.albums" style="height: fit-content;">
+                                            <img src={{pic.images[0].url}} alt="album-1" style="height: 100%; width: 100%;"/>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" *ngIf="artistContentList?.length > 1">
+                                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                  <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" *ngIf="artistContentList?.length > 1">
+                                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                  <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+        </mat-tab>
+
+        <!--Tab 3-->
+        <mat-tab label="Venue">
+            <div class="row g-1 mt-2 p-3">
+                <div class="row-xs col-sm g-1 mt-2">
+                    <div class="col-sm text-center" *ngIf="venueResults.name != null">
+                        <p class="cardSubHeadings">Name</p>
+                        <p class="headingDetails">{{venueResults.name}}</p>
+                    </div>
+                    <div class="col-sm text-center" *ngIf="venueResults.address != null">
+                        <p class="cardSubHeadings">Address</p>
+                        <p class="headingDetails">{{venueResults.address}}</p>
+                    </div>
+                    <div class="col-sm text-center" *ngIf="venueResults.phoneNumber != null">
+                        <p class="cardSubHeadings">Phone Number</p>
+                        <p class="headingDetails">{{venueResults.phoneNumber}}</p>
+                    </div>
+                </div>
+                <div class="row-xs col-sm g-1 mt-2">
+                    <div class="col-sm text-center" *ngIf="venueResults.openHours != null">
+                        <p class="cardSubHeadings">Open Hours</p>
+                        <p class="headingDetails showHide" [class.show]="showHours">{{venueResults.openHours}}</p>
+                        <button type="button" class="btn btn-link moreLess" (click)="showHours = !showHours"><span>{{ showHours ? 'Show less': 'Show More' }}
+                            <svg *ngIf="showHours" xmlns="http://www.w3.org/2000/svg" color="white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-chevron-up" viewBox="0 0 24 24" width="20px" height="20px"><path d="m18 15-6-6-6 6"/></svg>
+                            <svg *ngIf="!showHours" xmlns="http://www.w3.org/2000/svg" color="white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-chevron-down" viewBox="0 0 24 24" width="20px" height="20px"><path d="m6 9 6 6 6-6"/></svg>
+                        </span>
+                        </button>
+                    </div>
+                    <div class="col-sm text-center" *ngIf="venueResults.generalRule != null">
+                        <p class="cardSubHeadings">General Rule</p>
+                        <p class="headingDetails showHide" [class.show]="showGenRule">{{venueResults.generalRule}}</p>
+                        <button type="button" class="btn btn-link moreLess" (click)="showGenRule = !showGenRule"><span>{{ showGenRule ? 'Show less': 'Show More' }}
+                            <svg *ngIf="showGenRule" xmlns="http://www.w3.org/2000/svg" color="white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-chevron-up" viewBox="0 0 24 24" width="20px" height="20px"><path d="m18 15-6-6-6 6"/></svg>
+                            <svg *ngIf="!showGenRule" xmlns="http://www.w3.org/2000/svg" color="white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-chevron-down" viewBox="0 0 24 24" width="20px" height="20px"><path d="m6 9 6 6 6-6"/></svg>
+                        </span>
+                        </button>
+                    </div>
+                    <div class="col-sm text-center" *ngIf="venueResults.childRule  != null">
+                        <p class="cardSubHeadings">Child Rule</p>
+                        <p class="headingDetails showHide" [class.show]="showChiRule">{{venueResults.childRule}}</p>
+                        <button type="button" class="btn btn-link moreLess" (click)="showChiRule = !showChiRule"><span>{{ showChiRule ? 'Show less': 'Show More' }}
+                            <svg *ngIf="showChiRule" xmlns="http://www.w3.org/2000/svg" color="white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-chevron-up" viewBox="0 0 24 24" width="20px" height="20px"><path d="m18 15-6-6-6 6"/></svg>
+                            <svg *ngIf="!showChiRule" xmlns="http://www.w3.org/2000/svg" color="white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-chevron-down" viewBox="0 0 24 24" width="20px" height="20px"><path d="m6 9 6 6 6-6"/></svg>
+                        </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 py-4 text-center">
+            <button class="btn btn-danger" type="button" data-bs-target="#MymodalBack" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show venue on Google Map</button>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+</div>
+
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="staticBackdropLabel"><b>Event Venue</b></h5>
+        </div>
+        <div class="modal-body">
+            <div class="my-google-map row">
+                <div class="col-md-12">
+                <google-map [center]="center" width=100%>
+                    <map-marker [position]="marker?.position"></map-marker>
+                </google-map>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer w-100 text-start">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background-color:black; color:white">Close</button>
+        </div>
+    </div>
+</div>
+
+
+    

@@ -1,0 +1,15 @@
+.active {
+    border-color: white;
+    border: 2px solid white;
+    border-radius: 13px;
+}
+.navbar-nav {
+    margin-left: auto;
+}
+.navbar li, .navbar a {
+    display: inline-block; 
+    color: white; 
+}
+.navbar a {
+    padding-inline: 10px;
+}

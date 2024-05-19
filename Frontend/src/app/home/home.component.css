@@ -1,0 +1,124 @@
+#form_outer {
+    border: 1px transparent;
+    border-radius: 15px;
+    box-shadow: 0 0 5px 0 ;
+    background-color: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+}
+
+#eventSearchTitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'merriweather','serif';
+    font-size: 30px;
+    font-weight: unset;
+    margin-bottom: 10px;
+}
+
+#search_results_card {
+    background-color: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px); 
+}
+
+#form_heading{
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'merriweather','serif';
+}
+
+.cardSubHeadings{
+color: aquamarine;
+margin-bottom: 5px;
+}
+.cardSubHeadingsArtist{
+    color: aquamarine;
+    font-weight: 600;
+    margin-bottom: 10px;  
+}
+
+#form_subheadings{
+    font-size: 16px;
+    font-weight: 400;
+    color: skyblue;
+}
+.table td, .table th {
+    border: none;
+}
+
+.reqd:after {
+    content:"*";
+    color: red;
+  }
+
+::ng-deep .table{
+    border-collapse: collapse;
+    border-radius: 2em !important;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+#search_results_card{
+    color: white;
+}
+
+.cardSubHeadings{
+    font-weight: 600;
+
+}
+
+.headingDetails{
+    font-size: 15px;
+}
+
+.showHide {
+    font-size: 14px;
+    height: 40px;
+    overflow: hidden;
+    margin-bottom: 0px;
+}
+.moreLess{
+    color: skyblue;
+    margin-bottom: 10px;
+}
+
+.show {
+    overflow: visible;
+    height: auto;
+}
+
+.carousel-control-next,
+.carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(100%);
+    height: fit-content;
+    top: 50%;
+}
+
+.material-icons {
+    display: inline-block;
+    border-radius: 999px;
+    box-shadow: 0 0 2px #888;
+    background-color: white;
+    padding: 10px;
+}
+
+::ng-deep .mat-tab-header {
+    background-color:  #3e8e7c !important;
+}
+::ng-deep .mat-tab-label{
+    color:rgba(255, 255, 255, 0.8) !important;
+}
+::ng-deep .mat-tab-label:focus{
+    color:white !important;
+}
+::ng-deep .mat-tab-body-content{
+    overflow-x: hidden !important;
+}
+::ng-deep .map-container{
+    height: 400px !important;
+}
+::ng-deep .modal-footer{
+    justify-content: flex-start !important;
+}
+
+

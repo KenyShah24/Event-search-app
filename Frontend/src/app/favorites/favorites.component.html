@@ -1,0 +1,29 @@
+<p class="text-center my-5 mx-auto col-md-5 col-10" id="noR" *ngIf="noFavorites" style="color:red; font-size:18px; background-color: white; border-radius: 1em; font-weight: 500;">No favorite events to show</p>
+<div *ngIf="favoritesExists">
+    <p class="text-center" style="color:aquamarine"><b>List of your favorite events</b></p>
+    <div class="container col-sm-8">
+    <table class="table table-responsive mt-5 mx-md-auto col-sm-8 col-10" style="background-color: white; overflow:auto;display:block;">
+        <thead>
+                <th class="text-center col-1">#</th>
+                <th class="text-center col-2">Date</th>
+                <th class="text-center col-3">Event</th>
+                <th class="text-center col-2">Category</th>
+                <th class="text-center col-2">Venue</th>
+                <th class="text-center col-1">Favorite</th>
+        </thead>
+        <tbody>
+            <tr *ngFor = "let data of favoriteEventsData; let i=index;">
+                <td class="text-center">{{i+1}}</td>
+                <td class="text-center">{{data.date}}</td>
+                <td class="text-center">{{data.name}}</td>
+                <td class="text-center">{{data.category}}</td>
+                <td class="text-center">{{data.venue}}</td>
+                <td><button class="button button-remove" (click)="removeEvent(data.id)" style="background-color: transparent; border: none;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                  </svg></button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
